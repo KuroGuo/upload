@@ -10,6 +10,7 @@
     <input type="file" id="fileInput" name="file">
     <progress id="progressBar" value="0" max="100"></progress>
     <span id="progress"></span>
+    <span id="speed"></span>
     <input type="submit" value="上传">
   </form>
   <video src="bittrex-firo-usdt.mp4" autoplay loop muted width="61.8%" style="margin-top: 1rem;"></video>
@@ -23,13 +24,18 @@
 
     function uploadFile(url, file) {
       const xhr = new XMLHttpRequest()
-      const progressBar = document.getElementById('progressBar')
+
+      let lastTime, lastLoaded
 
       xhr.upload.addEventListener('progress', (event) => {
-        if (event.lengthComputable) {
-          const percentage = (event.loaded / event.total) * 100
-          progress.innerHTML = (progressBar.value = percentage).toFixed(2) + '%'
-        }
+        const now = new Date().getTime()
+        const timeSpan = now - lastTime
+        if (lastLoaded) speed.innerHTML = (((event.loaded - lastLoaded) / (1024 * 1024)) / (timeSpan / 1000)).toFixed(2) + ' MB/秒'
+        lastLoaded = event.loaded
+        lastTime = new Date().getTime()
+        const percentage = (event.loaded / event.total) * 100
+        progress.innerHTML = (progressBar.value = percentage).toFixed(2) + '%'
+        
       })
 
       xhr.onload = function () {

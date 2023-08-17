@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
       callback(null, 'uploads')
     },
     filename: (req, file, callback) => {
-      callback(null, file.originalname)
+      callback(null, Buffer.from(file.originalname, 'latin1').toString('utf8'))
     }
   })
   
